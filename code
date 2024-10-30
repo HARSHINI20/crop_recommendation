@@ -1,0 +1,118 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import warnings
+# Ignore all warnings (generally not recommended)
+warnings.filterwarnings("ignore")
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+8
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import MinMaxScaler
+df = pd.read_csv("CR.csv")
+df.describe()
+df.isnull().sum()
+df.apply(lambda x: len(x.unique()))
+df['label'].value_counts()
+#DATA VISUALIZATION
+sns.pairplot(df, hue='label')
+plt.show()
+drop_l = df.drop(columns=['label'])
+correlation_matrix = drop_l.corr()
+plt.figure(figsize=(6,6))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+plt.title('Correlation Heatmap')
+plt.show()plt.figure(figsize=(6,2))
+sns.boxplot(data=df.drop(columns=['label']), orient='h')
+plt.title('Boxplot of Features')
+plt.show
+#TRAIN-TEST SPLIT AND MODEL SELECTION
+X = df.drop(['crop_num','label'],axis=1)
+y = df['crop_num']
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+9
+X_test
+df['crop_num']=df['label'].map(crop_dict)
+#Data Standardization and preprocessing
+ms = MinMaxScaler()
+X_train = ms.fit_transform(X_train)
+X_test = ms.transform(X_test)
+sc = StandardScaler()
+sc.fit(X_train)
+X_train = sc.transform(X_train)
+X_test = sc.transform(X_test)
+#MODEL-SELECTION
+models = [
+ ('Random Forest', RandomForestClassifier(random_state=42)),
+ ('Decision Tree', DecisionTreeClassifier(random_state=42)),
+ ('Logistic Regression', LogisticRegression(random_state=42))
+]
+best_accuracy = 0
+best_model_name = None
+# Loop through models, train, and evaluate
+for name, model in models:
+ # Define model pipeline
+ model_pipeline = Pipeline(steps=[
+10
+ ('classifier', model)
+ ])
+
+ # Train the model
+ model_pipeline.fit(X_train, y_train)
+ # Make predictions on the test set
+ y_pred = model_pipeline.predict(X_test)
+ # Calculate accuracy
+ accuracy = accuracy_score(y_test, y_pred)
+ print(f"{name} Accuracy:", accuracy)
+
+ # Update best model if current model has higher accuracy
+ if accuracy > best_accuracy:
+ best_accuracy = accuracy
+ best_model_name = name
+print("\n")
+# Print the best model name and accuracy
+print("Best Model:", best_model_name)
+print("Best Model Accuracy:", best_accuracy)
+best_model = RandomForestClassifier(random_state=42) # Initialize with a placeholder model
+best_model.fit(X_train, y_train) # Train the model on the full dataset
+# Make prediction
+prediction = best_model.predict(X_test)
+11
+prediction
+# Take user input for features
+N = float(input("Enter Nitrogen (N) level: "))
+P = float(input("Enter Phosphorus (P) level: "))
+K = float(input("Enter Potassium (K) level: "))
+temperature = float(input("Enter Temperature: "))
+humidity = float(input("Enter Humidity: "))
+ph = float(input("Enter pH: "))
+rainfall = float(input("Enter Rainfall: "))
+# Create a DataFrame for user input
+user_input = pd.DataFrame({
+ 'N': [N],
+ 'P': [P],
+ 'K': [K],
+ 'temperature': [temperature],
+ 'humidity': [humidity],
+ 'ph': [ph],
+ 'rainfall': [rainfall]
+})
+user_input = ms.transform(user_input)
+user_input = sc.transform(user_input)
+# Make prediction
+prediction = best_model.predict(user_input)
+12
+print("Predicted Crop:", prediction[0])
+ps = pd.read_csv(pred.csv)
+import pickle
+# Save model using pickle
+with open('random_forest_model.pkl', 'wb') as f:
+ pickle.dump(best_model, f)
+pickle.dump(ms,open('minmaxscaler.pkl','wb'))
+pickle.dump(sc,open('standscaler.pkl','wb'))
