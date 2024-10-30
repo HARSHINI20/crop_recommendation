@@ -31,3 +31,7 @@ possible consequences
    
 4.Arduino Documentation : https://docs.arduino.cc/
 
+
+![image](https://github.com/user-attachments/assets/24e4a593-0f2c-41b7-bbd7-e6c825566f84)
+
+
